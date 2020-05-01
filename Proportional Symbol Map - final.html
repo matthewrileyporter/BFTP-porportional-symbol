@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Active Portfolio Map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        h1 {
+        
+            margin-right: 20px;
+            color: #001323;
+            text-align: center;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        #map {
+            width: 80%;
+            height: 540px;
+            margin: 10px auto;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+        
+        PS{color:#1f78b4;
+        }
+        
+        IT{color:#a83299;
+        }
+        
+        Health{color:#696969;
+        }
+        
+        DigitalHealth{color:#93de2a;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Ben Franklin Companies by Sector</h1>
+    </header>
+
+    <div id='map'></div>
+
+    <footer>
+        <p>Matthew Porter</p>
+    </footer>
+
+    <script src="ActPort.js"></script>
+    <script>
+
+      var map = L.map('map', {
+          center: [39.9526, -75.1652],
+          zoom: 8,
+      });
+      
+       var mapLink = 
+            '<a href="http://openstreetmap.org">OpenStreetMap</a>'; // Different Base Map!
+       var tiles =     L.tileLayer(
+           "https://api.mapbox.com/styles/v1/matthewrileyporter/ck9hmxox9504a1ileh1ncumc6/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibWF0dGhld3JpbGV5cG9ydGVyIiwiYSI6ImNrNXZsam81ODB6MXozbW1jYnozNHFkeGMifQ.vOtbzV5HH-L0Lg1J2wdIKA", {
+            attribution: '&copy; ' + mapLink + ' Contributors', maxZoom: 19
+           });  
+      
+      tiles.addTo(map);
+    
+    
+var  PSLayer = L.geoJson(port, {
+    pointToLayer: function(feature,latlng) {
+        return L.circleMarker(latlng, commonStyles);
+    },
+    
+    filter: function(feature) {
+        if(feature.properties.Sector === "PS") {
+            return feature;
+        }  
+    },
+    
+onEachFeature: function(feature, layer){
+    var name = feature.properties.Name
+    var maxemploy = feature.properties.employment
+    var popup = (name+"<br>Max employment: </br>"+maxemploy)
+    layer.bindPopup(popup)
+},
+    
+    style: function(feature) {
+        return {
+            color: '#1f78b4',
+            fillColor: '#1f78b4',
+            radius: getRadius(feature.properties.employment)
+        } 
+    }
+}).addTo(map);
+        
+var  ITLayer = L.geoJson(port, {
+    pointToLayer: function(feature,latlng) {
+        return L.circleMarker(latlng, commonStyles);
+    },
+    
+    filter: function(feature) {
+        if(feature.properties.Sector === "IT") {
+            return feature;
+        }  
+    },     
+
+onEachFeature: function(feature, layer){
+    var name = feature.properties.Name
+    var maxemploy = feature.properties.employment
+    var popup = (name+"<br>Max employment: </br>"+maxemploy)
+    layer.bindPopup(popup)
+},
+
+    
+    style: function(feature) {
+        return {
+            color: '#a83299',
+            fillColor: '#ff96f2',
+            radius: getRadius(feature.properties.employment)
+        } 
+    
+    },                     
+}).addTo(map);
+        
+var  HealthLayer = L.geoJson(port, {
+    pointToLayer: function(feature,latlng) {
+        return L.circleMarker(latlng, commonStyles);
+        console.log(feature.properties.Sector)
+    },
+    
+    filter: function(feature) {
+        if(feature.properties.Sector === "Health") {
+            return feature;
+        }  
+    },
+    
+
+    onEachFeature: function(feature, layer){
+    var name = feature.properties.Name
+    var maxemploy = feature.properties.employment
+    var popup = (name+" <br>Max employment: </br>"+maxemploy)
+    layer.bindPopup(popup)
+},
+
+    style: function(feature) {
+        return {
+            color: '#696969',
+            fillColor: '#bfbfbf',
+            radius: getRadius(feature.properties.employment)
+        } 
+    }
+}).addTo(map);
+        
+        var  DigHealthLayer = L.geoJson(port, {
+    pointToLayer: function(feature,latlng) {
+        return L.circleMarker(latlng, commonStyles);
+        console.log(feature.properties.Sector)
+    },
+    
+    filter: function(feature) {
+        if(feature.properties.Sector === "Digital Health") {
+            return feature;
+        }  
+    },
+    
+
+    onEachFeature: function(feature, layer){
+    var name = feature.properties.Name
+    var maxemploy = feature.properties.employment
+    var popup = (name+" <br>Max employment: </br>"+maxemploy)
+    layer.bindPopup(popup)
+},
+
+    style: function(feature) {
+        return {
+            color: '#93de2a',
+            fillColor: '#baff59',
+            radius: getRadius(feature.properties.employment)
+        } 
+    }
+}).addTo(map);
+
+//step 4
+        function getRadius(area){
+        var radius = Math.sqrt((area+1)/Math.PI);
+        return radius*3   
+    }
+        
+  var commonStyles = {
+            weight: 1,
+            stroke: false,
+            fillOpacity:.8
+        };
+var sourcesLayers = {
+    "<b><PS>PS</b>": PSLayer,
+    "<b><IT>IT</b>": ITLayer,
+    "<b><Health>Health</b>": HealthLayer,
+    "<b><DigitalHealth>Digital Health</b>": DigHealthLayer
+};
+        
+L.control.layers(null, sourcesLayers, { collapsed:true}).addTo(map);
+        
+
+          
+    </script>
+    
+</body>
+
+</html>
